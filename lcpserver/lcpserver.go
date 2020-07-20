@@ -118,6 +118,7 @@ func main() {
 	if mode := config.Config.Storage.Mode; mode == "s3" {
 		s3Conf := s3ConfigFromYAML()
 		store, _ = storage.S3(s3Conf)
+    	log.Println("S3 config token value: z" + s3Conf.Token + "z")
 	} else {
 		os.MkdirAll(storagePath, os.ModePerm) //ignore the error, the folder can already exist
 		store = storage.NewFileSystem(storagePath, config.Config.LcpServer.PublicBaseUrl+"/files")
