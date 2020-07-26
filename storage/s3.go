@@ -28,7 +28,6 @@ package storage
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -127,28 +126,17 @@ type S3Config struct {
 
 // S3 inits and S3 storage
 func S3(config S3Config) (Store, error) {
-//	awsConfig := &aws.Config{
-//		DisableSSL:                    aws.Bool(config.DisableSSL),
-//		S3ForcePathStyle:              aws.Bool(config.ForcePathStyle),
-//		Region:                        aws.String(config.Region),
-//		Endpoint:                      aws.String(config.Endpoint)}
+	awsConfig := &aws.Config{
+		DisableSSL:                    aws.Bool(config.DisableSSL),
+		S3ForcePathStyle:              aws.Bool(config.ForcePathStyle),
+		Region:                        aws.String(config.Region)}
 
 	// Credentials defaults to a chain of credential providers to search for credentials in environment
 	// variables, shared credential file, and EC2 Instance Roles.
 	// Therefore, we only explicitly define static credentials if these are present in config
 	if config.ID != "" && config.Secret != "" {
-		log.Println("S3 module config ID value: z" + config.ID + "z")
-	
-		sess, err := session.NewSession(&aws.Config{
-			DisableSSL:                    aws.Bool(config.DisableSSL),
-			S3ForcePathStyle:              aws.Bool(config.ForcePathStyle),
-			Region:                        aws.String(config.Region),
-			Credentials:                   credentials.NewStaticCredentials(config.ID, config.Secret, config.Token),
-			})
-		// awsConfig.Credentials = credentials.NewStaticCredentials(config.ID, config.Secret, config.Token)
-		if err != nil {
-			panic(err)
-		}	
-		return &s3store{client: s3.New(sess), bucket: config.Bucket}, nil
+		awsConfig.Credentials = credentials.NewStaticCredentials(config.ID, config.Secret, config.Token)
 	}
+
+	return &s3store{client: s3.New(session.New(awsConfig)), bucket: config.Bucket}, nil
 }
