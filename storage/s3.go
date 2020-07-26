@@ -28,6 +28,7 @@ package storage
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -126,7 +127,6 @@ type S3Config struct {
 
 // S3 inits and S3 storage
 func S3(config S3Config) (Store, error) {
-	import "log"
 //	awsConfig := &aws.Config{
 //		DisableSSL:                    aws.Bool(config.DisableSSL),
 //		S3ForcePathStyle:              aws.Bool(config.ForcePathStyle),
