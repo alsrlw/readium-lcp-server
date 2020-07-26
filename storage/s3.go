@@ -126,6 +126,7 @@ type S3Config struct {
 
 // S3 inits and S3 storage
 func S3(config S3Config) (Store, error) {
+	import "log"
 //	awsConfig := &aws.Config{
 //		DisableSSL:                    aws.Bool(config.DisableSSL),
 //		S3ForcePathStyle:              aws.Bool(config.ForcePathStyle),
@@ -137,6 +138,7 @@ func S3(config S3Config) (Store, error) {
 	// Therefore, we only explicitly define static credentials if these are present in config
 	if config.ID != "" && config.Secret != "" {
 		log.Println("S3 module config ID value: z" + config.ID + "z")
+	
 		sess, err := session.NewSession(&aws.Config{
 			DisableSSL:                    aws.Bool(config.DisableSSL),
 			S3ForcePathStyle:              aws.Bool(config.ForcePathStyle),
@@ -147,7 +149,6 @@ func S3(config S3Config) (Store, error) {
 		if err != nil {
 			panic(err)
 		}	
+		return &s3store{client: s3.New(sess), bucket: config.Bucket}, nil
 	}
-
-	return &s3store{client: s3.New(sess), bucket: config.Bucket}, nil
 }
